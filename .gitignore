@@ -1,0 +1,17 @@
+log.txt
+log.txt.*
+*.diff
+*.dotCover
+*.user
+*.suo
+*.temp
+_ReSharper.*
+*.nupkg
+bin/
+obj/
+packages/
+TestResult.xml
+*.ReSharper
+*.crunchproject.*
+*.crunchsolution.*
+Move.Platform.Api.Web/soldzip.dat

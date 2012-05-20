@@ -1,0 +1,31 @@
+{
+ "nuget" : {
+  "NuGet official package source" : "https://nuget.org/api/v2/"
+ },
+ "package" : {
+  "Castle.Core" : {
+   "version" : "3.0.0.4001",
+   "assembly" : {
+    "lib\\net40-client" : ["Castle.Core"]
+   }
+  },
+  "CH.Ioc.Infrastructure.Wiring" : {
+   "version" : "1.0.1",
+   "assembly" : {
+    "lib\\net40" : ["CH.IoC.Infrastructure.Wiring"]
+   }
+  },
+  "EnyimMemcached" : {
+   "version" : "2.11",
+   "assembly" : {
+    "lib\\net35" : ["Enyim.Caching"]
+   }
+  },
+  "NUnit" : {
+   "version" : "2.6.0.12054",
+   "assembly" : {
+    "lib" : ["nunit.framework"]
+   }
+  }
+ }
+}
