@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -52,13 +52,16 @@
   <ItemGroup>
     <Compile Include="IMemcached.cs" />
     <Compile Include="IMemcachedClientFactory.cs" />
+    <Compile Include="IMemcachedFactory.cs" />
     <Compile Include="IMemcachedSettings.cs" />
     <Compile Include="Memcached.cs" />
     <Compile Include="MemcachedClientFactory.cs" />
+    <Compile Include="MemcachedFactory.cs" />
     <Compile Include="MemcachedSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CH.Memcached.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

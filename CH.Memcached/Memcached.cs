@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using CH.IoC.Infrastructure.Wiring;
@@ -21,6 +24,32 @@ namespace CH.Memcached
         {
             _memcacheSettings = memcachedSettings;
             _memcachedClient = memcachedClientFactory.Create(memcachedSettings);
+        }
+
+        public IDictionary<string,IDictionary<string,string>> Stats()
+        {
+            var serverStats = _memcachedClient.Stats();
+            var result = new Dictionary<string, IDictionary<string, string>>();
+
+            // yep, total hack.
+            var type = typeof (ServerStats);
+            var fieldInfo = type.GetField("results",BindingFlags.Instance|BindingFlags.NonPublic);
+            if (fieldInfo == null) return result;
+
+            var results = (Dictionary<IPEndPoint, Dictionary<string, string>>) fieldInfo.GetValue(serverStats);
+            if (results == null) return result;
+
+            foreach(var server in results)
+            {
+                var dictionary = new Dictionary<string, string>();
+                result[server.Key.ToString()] = dictionary;
+                foreach(var stat in server.Value)
+                {
+                    dictionary[stat.Key] = stat.Value;
+                }
+            }
+
+            return result;
         }
 
         public bool TryGetOrAdd(string key, Func<string> valueProducer, out string value)

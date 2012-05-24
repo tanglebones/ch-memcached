@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using CH.Memcached.Ex;
 using Enyim.Caching;
 using Enyim.Caching.Memcached;
@@ -19,14 +20,14 @@ namespace CH.Memcached.Test
             A.CallTo(() => mcc.Get<byte[]>(A<string>._)).Returns(null);
             A.CallTo(() => mcc.Store(StoreMode.Add, A<string>._, A<object>._, A<TimeSpan>._)).Returns(true);
 
-            var chmc = new Memcached(
+            IMemcachedFactory mf = new MemcachedFactory(mcf);
+            var chmc = mf.Create(
                 MemcachedSettings.Settings
                     .Prefix("test")
                     .Server("localhost", 12345)
                     .TtlMin(TimeSpan.FromSeconds(30))
                     .TtlRange(TimeSpan.FromSeconds(3000))
                     .LockTime(TimeSpan.FromSeconds(15))
-                , mcf
                 );
 
             string value;
@@ -34,6 +35,19 @@ namespace CH.Memcached.Test
 
             A.CallTo(() => mcc.Store(StoreMode.Set, A<string>._, A<object>._, A<TimeSpan>._)).MustHaveHappened();
             A.CallTo(() => mcc.Remove(A<string>._)).MustHaveHappened();
+        }
+
+        [Test]
+        public void TestIoc()
+        {
+            var r = new CH.IoC.Infrastructure.Resolver(new[]{"CH."});
+            var mf = r.Resolve<IMemcachedFactory>();
+            var mc = mf.Create(MemcachedSettings.Settings.Server("localhost", 17325));
+
+            var stats = mc.Stats();
+            
+            Assert.Greater(stats.Count,0);
+            Assert.Greater(stats.First().Value.Count,0);
         }
     }
 }
