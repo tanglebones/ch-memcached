@@ -68,6 +68,9 @@ namespace CH.Memcached
                 return ret;
             }
 
+            if (!Put("ping", string.Empty))
+                throw new Exception("Lost connection?");
+
             return false;
         }
 
