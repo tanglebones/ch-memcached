@@ -6,6 +6,7 @@ namespace CH.Memcached
     public interface IMemcached
     {
         bool TryGetOrAdd(string key, Func<string> valueProducer, out string value);
-        IDictionary<string,IDictionary<string,string>> Stats();
+        bool TryGetOrAdd(string key, Func<string> valueProducer, out string value, bool forceCompute);
+        IDictionary<string, IDictionary<string, string>> Stats();
     }
 }

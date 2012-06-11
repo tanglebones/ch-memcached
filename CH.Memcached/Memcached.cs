@@ -26,6 +26,29 @@ namespace CH.Memcached
             _memcachedClient = memcachedClientFactory.Create(memcachedSettings);
         }
 
+        public bool TryGetOrAdd(string key, Func<string> valueProducer, out string value, bool forceCompute)
+        {
+            value = null;
+            var keyHash = Hash(key);
+
+            if (!forceCompute && Get(keyHash, out value))
+                return true;
+
+            var lockHash = "L" + keyHash;
+            if (GetLock(lockHash))
+            {
+                value = valueProducer();
+                var ret = value != null && Put(keyHash, value);
+                Delete(lockHash);
+                return ret;
+            }
+
+            if (!Put("ping", string.Empty))
+                throw new Exception("Lost connection?");
+
+            return false;
+        }
+
         public IDictionary<string,IDictionary<string,string>> Stats()
         {
             var serverStats = _memcachedClient.Stats();
@@ -41,10 +64,16 @@ namespace CH.Memcached
 
             foreach(var server in results)
             {
+                if (server.Key == null) continue;
+                if (server.Value == null) continue;
+
                 var dictionary = new Dictionary<string, string>();
                 result[server.Key.ToString()] = dictionary;
                 foreach(var stat in server.Value)
                 {
+                    if (stat.Key == null) continue;
+                    if (stat.Value == null) continue;
+
                     dictionary[stat.Key] = stat.Value;
                 }
             }
@@ -54,24 +83,7 @@ namespace CH.Memcached
 
         public bool TryGetOrAdd(string key, Func<string> valueProducer, out string value)
         {
-            var keyHash = Hash(key);
-
-            if (Get(keyHash, out value))
-                return true;
-
-            var lockHash = "L" + keyHash;
-            if (GetLock(lockHash))
-            {
-                value = valueProducer();
-                var ret = Put(keyHash, value);
-                Delete(lockHash);
-                return ret;
-            }
-
-            if (!Put("ping", string.Empty))
-                throw new Exception("Lost connection?");
-
-            return false;
+            return TryGetOrAdd(key, valueProducer, out value, false);
         }
 
         private void Delete(string lockHash)
