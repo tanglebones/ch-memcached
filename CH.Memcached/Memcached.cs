@@ -64,10 +64,16 @@ namespace CH.Memcached
 
             foreach(var server in results)
             {
+                if (server.Key == null) continue;
+                if (server.Value == null) continue;
+
                 var dictionary = new Dictionary<string, string>();
                 result[server.Key.ToString()] = dictionary;
                 foreach(var stat in server.Value)
                 {
+                    if (stat.Key == null) continue;
+                    if (stat.Value == null) continue;
+
                     dictionary[stat.Key] = stat.Value;
                 }
             }
