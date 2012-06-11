@@ -42,6 +42,12 @@ namespace CH.Memcached
                 return settings;
             }
 
+            public static IMemcachedSettings Servers(this IMemcachedSettings settings, IEnumerable<Tuple<string,ushort>> servers)
+            {
+                foreach(var s in servers) settings.Server.Add(s);
+                return settings;
+            }
+
             private sealed class MemcachedSettingsImpl : IMemcachedSettings
             {
                 public MemcachedSettingsImpl()
